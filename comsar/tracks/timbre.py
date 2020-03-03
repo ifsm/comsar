@@ -1,75 +1,102 @@
-from collections import ChainMap
 from dataclasses import dataclass
 import pathlib
 from timeit import default_timer as timer
-from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
-import soundfile as sf
 
-from apollon.signal.container import SpectrumParams
-from apollon.signal.spectral import Spectrum
+from apollon.audio import AudioFile
+from apollon.segment import Segmentation, Segments
+from apollon.signal.container import STParams
+from apollon.signal.spectral import StftSegments
+from apollon.signal import features
+from apollon.tools import standardize
 
-from apollon.signal import features, tools
-from apollon.audio import fti16
-from apollon.tools import scale, standardize
 
+segment_default = {'n_perseg': 2**15, 'n_overlap': 2**14, 'extend': True, 'pad': True}
+cdim_default = {'delay': 14, 'm_dim': 80, 'n_bins': 1000, 'scaling_size': 10}
+crr_default = {'wlen': 2**9, 'n_delay': 2**10, 'total': True}
 
 @dataclass
 class TTParams:
-    segment: dict = {'n_perseg': 2**15, 'n_overlap': 2**14}
-    spectrum: SpectrumParams = SpectrumParams(window='hamming',
-                                              lcf=50, ucf=10000, ldb=30)
-    cdim: dict = {'delay': 14, 'm_dim': 80}
-    crr: dict = {'wlen': 300, 'n_delay': 2500})
+    segment: dict
+    cdim: dict
+    crr: dict
 
 
 class TimbreTrack:
     """Compute timbre track of an audio file.
     """
-    def __init__(self, path, params: TTParams) -> None:
+    def __init__(self, path, segment_params: dict = segment_default,
+                 cdim_params: dict = cdim_default,
+                 crr_params: dict = crr_default) -> None:
         """
         Args:
             path:    Path to audio file.
             params:  Feature computation parameters.
         """
+        self.params = TTParams(segment_params, cdim_params, crr_params)
         self.path = pathlib.Path(path)
-        self.params = params
+        snd = AudioFile(path)
+        cutter = Segmentation(**self.params.segment)
+        self.segments = cutter.transform(snd.data.squeeze())
+        stp = STParams(snd.fps)
+        stft = StftSegments(stp)
+        self.spectrogram = stft.transform(self.segments)
+        self.feature_names = ('Spectral Centroid', 'Spectral Spread',
+                              'Spectral Flux', 'Roughness', 'Sharpness',
+                              'SPL', 'Correlation Dimension', 'Correlogram')
+        self.funcs = [features.spectral_centroid, features.spectral_spread,
+                      features.spectral_flux, features.roughness_helmholtz,
+                      features.sharpness, features.spl, features.cdim,
+                      features.correlogram]
 
-        self.segments = Segments(self.path, **self.params['segment'])
-        self.estimators = ('spectral_centroid', 'spectral_spread', 'splc',
-                           'roughness', 'sharpness', 'cdim', 'correlogram')
+        assert len(self.feature_names) == len(self.funcs)
 
-        self.total_time = 0.0
-        self.features = None
+        self._features = np.zeros((self.segments.n_segs, self.n_features))
+        self.pace = np.zeros(self.n_features)
+        self.verbose = False
+        snd.close()
 
-    def fit(self)
+    @property
+    def n_features(self) -> int:
+        return len(self.feature_names)
+
+    @property
+    def features(self) pd.DataFrame:
+        if self._features is None:
+            return None
+        return pd.DataFrame(data=self._features,
+                            columns=self.feature_names)
+
+    @property
+    def z_score(self) -> pd.Dataframe:
+        if self._features is None:
+            return None
+        return standardize(self.features)
+
+
+    def extract(self) -> None:
         """Perform extraction.
         """
-        _data = np.zeros((self.segments.n_segs, len(self.estimators)))
-        for seg in self.segments:
-            print(seg.idx, flush=True)
-            _data[seg.idx] = self._extract(seg)
+        args = [(self.spectrogram.frqs, self.spectrogram.power),
+                (self.spectrogram.frqs, self.spectrogram.power),
+                (self.spectrogram.abs,),
+                (self.spectrogram.d_frq, self.spectrogram.abs, 15000),
+                (self.spectrogram.frqs, self.spectrogram.abs),
+                (self.segments._segs,),
+                (self.segments._segs,),
+                (self.segments._segs,)]
 
-        self.features = pd.DataFrame(data=_data, columns=self.estimators)
+        kwargs = [{}, {}, {}, {}, {}, {}, self.params.cdim,
+                 self.params.crr]
+        for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
+            self._worker(i, fun, arg, kwarg)
 
-    def _extract(self, seg: Segment):
-        """Worker
-        """
-        start = timer()
-        y = spectral.Spectrum(self.se)
-        y.transform(seg.data)
-        ff = {'spectral_centroid': {'frqs': y.frqs, 'bins': y.power},
-              'spectral_spread': {'frqs': y.frqs, 'bins': y.power},
-              'splc': {'frqs': y.frqs, 'amps': y.abs, 'total': True},
-              'roughness_helmholtz': {'frqs': y.frqs, 'bins': y.power, 'frq_max': 100},
-              'sharpness': {'frqs': y.frqs.squeeze(), 'bins': y.abs.squeeze()},
-              'cdim': {'inp': fti16(seg.data).squeeze(), **self.params['cdim']},
-              'correlogram': {'inp': seg.data.squeeze(), **self.params['crr'], 'total': True}
-             }
-
-        estimates = [getattr(features, func)(**kwargs).item() for func, kwargs in ff.items()]
-        stop = timer() - start
-        print(f'{seg.idx}/{self.segments.n_segs}', stop, flush=True)
-        return estimates
+    def _worker(self, idx, func, args, kwargs) -> None:
+        print(self.feature_names[idx], end=' ... ')
+        pace = timer()
+        self._features[:, idx] = func(*args, **kwargs)
+        pace = timer() - pace
+        self.pace[idx] = pace
+        print(f'{pace:.4} s.')
