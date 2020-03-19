@@ -9,27 +9,34 @@
 import sys
 import argparse
 
-import apollon
-from apollon import commands
+from comsar import cli
 
 
-_valid_subcommand = ('features', 'onsets', 'hmm', 'som', 'export', 'position')
+_valid_subcommand = ('timbre', 'hmm', 'som', 'position')
 
 
 def _parse_cml(argv):
     parser = argparse.ArgumentParser('Computational Music and Sound Archiving')
     parser.add_argument(
-        '--version', action='version', version=apollon.__version__,
-        help='Display apollon version.')
+        '--version', action='version', version=comsar.__version__,
+        help='Display COMSAR version.')
 
     subparsers = parser.add_subparsers()
+    sp_tt = _create_subparser_timbretrack()
+    """
     sp_features = _create_subparser_features(subparsers)
     sp_hmm = _create_subparser_hmm(subparsers)
     sp_position = _create_subparser_position(subparsers)
-
+    """
     return parser.parse_args(argv[1:])
 
 
+def _create_subparser_timbretrack(subparsers):
+    sp_tt = subparser.add_parser('timbre', help='Start timbre track')
+    sp_features.add_argument('files', type=str, nargs='+', help='Auio files.')
+    sp_features.set_defaults(func=cli.comsar_timbre_track.main)
+
+"""
 def _create_subparser_features(subparsers):
     sp_features = subparsers.add_parser('features', help='')
     sp_features.add_argument(
@@ -104,15 +111,12 @@ def _create_subparser_position(subparsers):
 
     sp_position.set_defaults(func=commands.apollon_position.main)
     return sp_position
-
-
+"""
 def main(argv=None):
     if argv is None:
         argv = sys.argv
-
     args = _parse_cml(argv)
     return args.func(args)
-
 
 if __name__ == '__main__':
     sys.exit(main())
