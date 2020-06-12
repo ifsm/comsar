@@ -2,7 +2,6 @@
 License: BSD-3-Clasuse
 Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
-from dataclasses import dataclass
 from timeit import default_timer as timer
 from typing import Optional
 
@@ -16,7 +15,8 @@ from apollon.signal.spectral import StftSegments
 from apollon.tools import time_stamp
 
 import comsar
-from comsar.tracks.utilities import TrackMeta, TrackParams, TrackResult, TimbreTrackParams
+from comsar._tracks.utilities import (TrackMeta, TrackResult,
+                                      TimbreTrackParams)
 
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
