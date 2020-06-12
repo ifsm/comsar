@@ -16,7 +16,7 @@ from apollon.tools import time_stamp
 
 import comsar
 from comsar._tracks.utilities import (TrackMeta, TrackResult,
-                                      TimbreTrackParams)
+                                      TimbreTrackParams, TimbreTrackAltParams)
 
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
@@ -125,9 +125,8 @@ class TimbreTrackAlt:
         """
         Args:
         """
-        self.params = TimbreTrackParams(stft_params or STFT_DEFAULT,
-                                        corr_dim_params or CORR_DIM_DEFAULT,
-                                        corr_gram_params or CORR_GRAM_DEFAULT)
+        self.params = TimbreTrackAltParams(stft_params or STFT_DEFAULT,
+                                        corr_dim_params or CORR_DIM_DEFAULT)
 
         self.cutter = Segmentation(self.params.stft.n_perseg,
                                    self.params.stft.n_overlap,

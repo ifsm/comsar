@@ -42,6 +42,13 @@ class TimbreTrackParams(TrackParams):
     corr_gram: signal.container.CorrGramParams
 
 
+@dataclass
+class TimbreTrackAltParams(TrackParams):
+    """Parameter set for TimbreTrack"""
+    stft: signal.container.StftParams
+    corr_dim: signal.container.CorrDimParams
+
+
 class TrackResult:
     """Provide track results."""
     def __init__(self, meta: TrackMeta, params: TrackParams,
