@@ -12,7 +12,7 @@ import pandas as pd
 
 from apollon import io
 from apollon import container
-from apollon import signal
+from apollon.signal import container as asc
 from apollon.tools import standardize
 from apollon import types
 
@@ -37,16 +37,16 @@ class TrackParams(container.Params):
 @dataclass
 class TimbreTrackParams(TrackParams):
     """Parameter set for TimbreTrack"""
-    stft: signal.container.StftParams
-    corr_dim: signal.container.CorrDimParams
-    corr_gram: signal.container.CorrGramParams
+    stft: asc.StftParams
+    corr_dim: asc.CorrDimParams
+    corr_gram: asc.CorrGramParams
 
 
 @dataclass
 class TimbreTrackAltParams(TrackParams):
     """Parameter set for TimbreTrack"""
-    stft: signal.container.StftParams
-    corr_dim: signal.container.CorrDimParams
+    stft: asc.StftParams
+    corr_dim: asc.CorrDimParams
 
 
 class TrackResult:
