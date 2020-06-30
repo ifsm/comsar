@@ -52,9 +52,9 @@ class TimbreTrack:
         self.stft = StftSegments(self.params.stft.fps, self.params.stft.window,
                                  self.params.stft.n_fft)
 
-        self.feature_names = ('Spectral Centroid', 'Spectral Spread',
-                              'Spectral Flux', 'Roughness', 'Sharpness',
-                              'SPL', 'Correlation Dimension', 'Correlogram')
+        self.feature_names = ('SpectralCentroid', 'SpectralSpread',
+                              'SpectralFlux', 'Roughness', 'Sharpness',
+                              'SPL', 'CorrelationDimension', 'Correlogram')
 
         self.funcs = [features.spectral_centroid,
                       features.spectral_spread,
@@ -136,9 +136,9 @@ class TimbreTrackAlt:
         self.stft = StftSegments(self.params.stft.fps, self.params.stft.window,
                                  self.params.stft.n_fft)
 
-        self.feature_names = ('Spectral Centroid', 'Spectral Spread',
-                              'Spectral Flux', 'Roughness', 'Sharpness',
-                              'SPL', 'Correlation Dimension')
+        self.feature_names = ('SpectralCentroid', 'SpectralSpread',
+                              'SpectralFlux', 'Roughness', 'Sharpness',
+                              'SPL', 'CorrelationDimension')
 
         self.funcs = [features.spectral_centroid,
                       features.spectral_spread,
