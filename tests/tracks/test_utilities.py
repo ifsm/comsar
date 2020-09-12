@@ -4,15 +4,14 @@ import unittest
 
 from hypothesis import given
 
-from comsar import TrackResult
-from comsar.tracks.timbre import TimbreTrackParams
-from .. utils import timbre_track_results
+from comsar._tracks.utilities import TimbreTrackParams, TrackResult
+from utils import timbre_track_results
 
 
 class TestTrackResult(unittest.TestCase):
     def setUp(self) -> None:
         self.tf_descr, self.tf_name = tempfile.mkstemp(suffix='.json',
-                                                      text=True)
+                                                       text=True)
 
     @given(timbre_track_results())
     def test_init(self, ttr) -> None:

@@ -25,7 +25,8 @@ class TrackMeta(container.Params):
     _schema: ClassVar[types.Schema] = None
     version: str
     time_stamp: str
-    source: str
+    source_name: str
+    source_hash: str
 
 
 @dataclass
@@ -39,11 +40,10 @@ class TimbreTrackParams(TrackParams):
     """Parameter set for TimbreTrack"""
     stft: asc.StftParams
     corr_dim: asc.CorrDimParams
-    corr_gram: asc.CorrGramParams
 
 
 @dataclass
-class TimbreTrackAltParams(TrackParams):
+class TimbreTrackCorrGramParams(TrackParams):
     """Parameter set for TimbreTrack"""
     stft: asc.StftParams
     corr_dim: asc.CorrDimParams
@@ -91,12 +91,16 @@ class TrackResult:
         """Serialize TrackResults to dictionary."""
         return {'meta': self._meta.to_dict(),
                 'params': self._params.to_dict(),
-                'data': self._data.to_dict()}
+                'data': self._data.to_dict(orient='list')}
 
     def to_json(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize TrackResults to JSON."""
         io.json.dump(self.to_dict(), path)
 
+
+    def to_mongo(self, db_con) -> None:
+        """Write TrackResults to open MongoDB connection:"""
+        pass
 
     def to_pickle(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize Track Results to pickle."""

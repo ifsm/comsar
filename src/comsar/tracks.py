@@ -1,2 +1,2 @@
 from . _tracks.timbre import TimbreTrack
-from . _tracks.timbre import TimbreTrackAlt
+from . _tracks.timbre import TimbreTrackCorrGram
