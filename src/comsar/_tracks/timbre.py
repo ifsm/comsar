@@ -2,6 +2,7 @@
 License: BSD-3-Clasuse
 Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
+from datetime import datetime
 from timeit import default_timer as timer
 from typing import Optional
 
@@ -12,7 +13,6 @@ from apollon.audio import AudioFile
 from apollon.segment import Segmentation
 from apollon.signal import container, features
 from apollon.signal.spectral import StftSegments
-from apollon.tools import time_stamp
 
 import comsar
 from comsar._tracks.utilities import (TrackMeta, TrackResult,
@@ -94,7 +94,7 @@ class TimbreTrack:
         out = np.zeros((segs.n_segs, self.n_features))
         for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
             out[:, i] = self._worker(i, fun, arg, kwarg)
-        meta = TrackMeta(comsar.__version__, time_stamp(),
+        meta = TrackMeta(comsar.__version__, datetime.utcnow(),
                          snd.file_name, snd.hash)
         out = pd.DataFrame(data=out, columns=self.feature_names)
         snd.close()
@@ -180,7 +180,7 @@ class TimbreTrackCorrGram:
             out[:, i] = self._worker(i, fun, arg, kwarg)
         snd.close()
 
-        meta = TrackMeta(comsar.__version__, time_stamp(), snd.file_name)
+        meta = TrackMeta(comsar.__version__, datetime.utcnow(), snd.file_name)
         out = pd.DataFrame(data=out, columns=self.feature_names)
         return TrackResult(meta, self.params, out)
 
