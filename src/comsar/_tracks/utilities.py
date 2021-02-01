@@ -2,6 +2,7 @@
 License: BSD-3-Clasuse
 Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
+import datetime
 import pathlib
 import pickle
 from typing import ClassVar, Type, TypeVar, Union
@@ -19,14 +20,23 @@ from apollon import types
 
 T = TypeVar('T')
 
+
+@dataclass
+class SourceMeta(container.Params):
+    """Source file meta data."""
+    _schema: ClassVar[types.Schema] = None
+    name: str
+    hash: str
+    extension: str
+
+
 @dataclass
 class TrackMeta(container.Params):
     """Track meta data."""
     _schema: ClassVar[types.Schema] = None
     version: str
-    time_stamp: str
-    source_name: str
-    source_hash: str
+    extraction_date: datetime.datetime
+    source: SourceMeta
 
 
 @dataclass
