@@ -3,10 +3,7 @@ import numpy as np
 import pandas as pd
 
 from apollon.tools import time_stamp
-from comsar.tracks.timbre import (TimbreTrack,
-    STFT_DEFAULT, CORR_DIM_DEFAULT, CORR_GRAM_DEFAULT)
-import comsar
-from comsar.tracks.utilities import TrackMeta, TrackParams, TrackResult, TimbreTrackParams
+from comsar.tracks import TimbreTrack
 
 
 class TestTimbreTrack(unittest.TestCase):
@@ -15,5 +12,3 @@ class TestTimbreTrack(unittest.TestCase):
 
     def test_nfeatures(self):
         self.assertIsInstance(self.track.n_features, int)
-
-

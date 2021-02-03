@@ -1,3 +1,6 @@
+"""
+Utilities for testing.
+"""
 import string
 
 from hypothesis.strategies import (composite, integers, lists, sampled_from,
@@ -7,8 +10,8 @@ import pandas as pd
 from apollon.tools import time_stamp
 
 import comsar
-from comsar.tracks import timbre
-from comsar.tracks.utilities import TrackMeta, TimbreTrackParams, TrackResult
+from comsar._tracks import timbre
+from comsar._tracks.utilities import TrackMeta, TimbreTrackParams, TrackResult
 
 
 def ascii_strings() -> SearchStrategy:
@@ -16,9 +19,11 @@ def ascii_strings() -> SearchStrategy:
     return  text(sampled_from(string.ascii_letters+string.digits),
                  min_size=2, max_size=10)
 
+
 def lists_of_strings() -> SearchStrategy:
     """Lists of unique ascii_strings."""
     return lists(ascii_strings(), min_size=2, max_size=10, unique=True)
+
 
 @composite
 def numerical_dataframes(draw) -> pd.DataFrame:
@@ -32,11 +37,14 @@ def numerical_dataframes(draw) -> pd.DataFrame:
     data = draw(arrays('float64', (n_rows, len(names))))
     return pd.DataFrame(data=data, columns=names)
 
+
 @composite
 def timbre_track_results(draw) -> TrackResult:
-    meta = TrackMeta(comsar.__version__, time_stamp(), 'testfile.wav')
+    """Mock the result of a timbre track extraction pipeline.
+    """
+    meta = TrackMeta(comsar.__version__, time_stamp(), 'testfile.wav',
+                     draw(ascii_strings()))
     params = TimbreTrackParams(timbre.STFT_DEFAULT,
-                               timbre.CORR_DIM_DEFAULT,
-                               timbre.CORR_GRAM_DEFAULT)
+                               timbre.CORR_DIM_DEFAULT)
     data = draw(numerical_dataframes())
     return TrackResult(meta, params, data)

@@ -2,6 +2,7 @@
 License: BSD-3-Clasuse
 Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
+import datetime
 import pathlib
 import pickle
 from typing import ClassVar, Type, TypeVar, Union
@@ -12,20 +13,30 @@ import pandas as pd
 
 from apollon import io
 from apollon import container
-from apollon import signal
+from apollon.signal import container as asc
 from apollon.tools import standardize
 from apollon import types
 
 
 T = TypeVar('T')
 
+
+@dataclass
+class SourceMeta(container.Params):
+    """Source file meta data."""
+    _schema: ClassVar[types.Schema] = None
+    name: str
+    extension: str
+    hash_: str
+
+
 @dataclass
 class TrackMeta(container.Params):
     """Track meta data."""
     _schema: ClassVar[types.Schema] = None
     version: str
-    time_stamp: str
-    source: str
+    extraction_date: datetime.datetime
+    source: SourceMeta
 
 
 @dataclass
@@ -37,9 +48,15 @@ class TrackParams(container.Params):
 @dataclass
 class TimbreTrackParams(TrackParams):
     """Parameter set for TimbreTrack"""
-    stft: signal.container.StftParams
-    corr_dim: signal.container.CorrDimParams
-    corr_gram: signal.container.CorrGramParams
+    stft: asc.StftParams
+    corr_dim: asc.CorrDimParams
+
+
+@dataclass
+class TimbreTrackCorrGramParams(TrackParams):
+    """Parameter set for TimbreTrack"""
+    stft: asc.StftParams
+    corr_dim: asc.CorrDimParams
 
 
 class TrackResult:
@@ -84,12 +101,16 @@ class TrackResult:
         """Serialize TrackResults to dictionary."""
         return {'meta': self._meta.to_dict(),
                 'params': self._params.to_dict(),
-                'data': self._data.to_dict()}
+                'data': self._data.to_dict(orient='list')}
 
     def to_json(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize TrackResults to JSON."""
         io.json.dump(self.to_dict(), path)
 
+
+    def to_mongo(self, db_con) -> None:
+        """Write TrackResults to open MongoDB connection:"""
+        pass
 
     def to_pickle(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize Track Results to pickle."""
