@@ -15,7 +15,7 @@ from apollon.signal import container, features
 from apollon.signal.spectral import StftSegments
 
 import comsar
-from comsar._tracks.utilities import (TrackMeta, TrackResult,
+from comsar._tracks.utilities import (TrackMeta, TrackResult, SourceMeta,
                                       TimbreTrackParams, TimbreTrackCorrGramParams)
 
 
@@ -94,11 +94,13 @@ class TimbreTrack:
         out = np.zeros((segs.n_segs, self.n_features))
         for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
             out[:, i] = self._worker(i, fun, arg, kwarg)
-        meta = TrackMeta(comsar.__version__, datetime.utcnow(),
-                         snd.file_name, snd.hash)
+
+        file_meta = SourceMeta(*snd.file_name.split('.'), snd.hash)
+        track_meta = TrackMeta(comsar.__version__, datetime.utcnow(),
+                               file_meta)
         out = pd.DataFrame(data=out, columns=self.feature_names)
         snd.close()
-        return TrackResult(meta, self.params, out)
+        return TrackResult(track_meta, self.params, out)
 
     def _worker(self, idx, func, args, kwargs) -> np.ndarray:
         print(self.feature_names[idx], end=' ... ')

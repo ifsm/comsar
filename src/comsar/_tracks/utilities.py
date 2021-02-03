@@ -26,8 +26,8 @@ class SourceMeta(container.Params):
     """Source file meta data."""
     _schema: ClassVar[types.Schema] = None
     name: str
-    hash: str
     extension: str
+    hash_: str
 
 
 @dataclass
