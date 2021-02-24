@@ -26,6 +26,7 @@ author = 'Michael Blaß, Rolf Bader'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.3'
+version = '0.0.3'    # needed for epub
 
 
 # -- General configuration ---------------------------------------------------
