@@ -35,6 +35,8 @@ version = '0.0.3'    # needed for epub
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.napoleon',
+    'sphinxcontrib.apidoc',
     'sphinx_rtd_theme',
 ]
 
@@ -58,3 +60,22 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# -- Options for apidoc -----------------------------------------------------
+#
+apidoc_module_dir = '../../src/comsar'
+
+# -- Options for Napoleon ---------------------------------------------------
+#
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_keyword = True
+napoleon_use_rtype = True
+
+
