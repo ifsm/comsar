@@ -3,17 +3,19 @@
 # mblass@posteo.net
 
 import argparse
-import itertools
 import json
-import sys
-import typing
 import logging
+import pathlib
+import sys
 import time
+from typing import List, Optional
 
-from apollon import io
+from apollon.io import io as aio
 
 
-def main(argv: dict = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
+    """Main entry point for command line interface.
+    """
     logging.basicConfig(filename='tt.log', filemode='w', level=logging.DEBUG)
     if argv is None:
         argv = sys.argv
@@ -37,8 +39,8 @@ def main(argv: dict = None) -> int:
         if argv.pitch:
             track_data['pitch'] = analyses.pitch_track(snd)
 
-        out_path = io.generate_outpath(path, argv.outpath, 'feat')
-        io.dump_json(track_data, out_path)
+        out_path = aio.generate_outpath(path, argv.outpath, 'feat')
+        aio.dump_json(track_data, out_path)
         timer_stop = time.time()
         print('Done in {:.5} s.'.format(timer_stop-timer_start), flush=True)
 
