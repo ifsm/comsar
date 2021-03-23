@@ -15,9 +15,8 @@ from apollon.signal import container, features
 from apollon.signal.spectral import StftSegments
 
 import comsar
-from comsar._tracks.utilities import (TrackMeta, TrackResult, SourceMeta,
-                                      TimbreTrackParams, TimbreTrackCorrGramParams)
-
+from . utilities import (TrackMeta, TrackResult, SourceMeta,
+                         TimbreTrackParams, TimbreTrackCorrGramParams)
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
                                     n_perseg=2**15, n_overlap=2**14,
@@ -26,7 +25,8 @@ STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
 CORR_DIM_DEFAULT = container.CorrDimParams(delay=14, m_dim=80, n_bins=1000,
                                            scaling_size=10)
 
-CORR_GRAM_DEFAULT = container.CorrGramParams(wlen=2**10, n_delay=2**8, total=True)
+CORR_GRAM_DEFAULT = container.CorrGramParams(wlen=2**10, n_delay=2**8,
+                                             total=True)
 
 
 class TimbreTrack:
