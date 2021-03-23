@@ -1,1 +1,6 @@
-from . timbre import TimbreTrack
+
+"""
+.. autoclass:: TimbreTrack
+"""
+from . _timbre import TimbreTrack
+
