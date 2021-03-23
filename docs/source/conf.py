@@ -21,8 +21,8 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'COMSAR'
-copyright = '2021, Michael Blaß, Rolf Bader'
-author = 'Michael Blaß, Rolf Bader'
+copyright = '2021, Michael Blaß'
+author = 'Michael Blaß '
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.3'
@@ -77,5 +77,3 @@ napoleon_use_ivar = True
 napoleon_use_param = True
 napoleon_use_keyword = True
 napoleon_use_rtype = True
-
-
