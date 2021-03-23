@@ -38,6 +38,8 @@ class TimbreTrack:
                  ) -> None:
         """
         Args:
+            stft_params:        Parameter for STFT.
+            corr_dim_params:    Parameter set for correlation dimension.
         """
         self.params = TimbreTrackParams(stft_params or STFT_DEFAULT,
                                         corr_dim_params or CORR_DIM_DEFAULT)
@@ -72,6 +74,12 @@ class TimbreTrack:
 
     def extract(self, path) -> pd.DataFrame:
         """Perform extraction.
+
+        Args:
+            path:   Path to audio file.
+
+        Returns:
+           Extracted features.
         """
         snd = AudioFile(path)
         if snd.fps != self.params.stft.fps:

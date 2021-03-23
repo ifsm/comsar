@@ -14,15 +14,24 @@ COMSAR combines pre-selected low-level audio features to *Track*
 objects, which represent a viewpoint.
 
 
-comsar Trask System
----------------------------------------
-* :doc:`tracks/pitch_track`
-* :doc:`tracks/rhythm_track`
-* :doc:`tracks/timbre_track`
+Basic usage
+----------------------------------------
+ In order to compute timbre features, for example, you just have to create an
+ TimbrTrack instance and then call its `extract()` method with the path to an
+ audio file.
 
+.. code-block:: python
+
+   from comsar.tracks import TimbreTrack
+
+   tt = TimbreTrack()
+   res = tt.extract('path/to/my_audio.wav')
+   res.to_pickle('my_features.pkl')
+
+Each track implements the same interface.
 
 Source code
----------------------------------------
+----------------------------------------
 The source code is available at the GitHub Repository.
 
 It is published under the permisive `BSD 3-Clause License`_. You may change and
@@ -36,16 +45,4 @@ republish the code for any personal or commercial project.
    :maxdepth: 2
   
    install
-   basics
-   tracks/pitch_track
-   tracks/rhythm_track
-   tracks/timbre_track
-   api/modules
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   tracks

@@ -36,7 +36,7 @@ version = '0.0.3'    # needed for epub
 # ones.
 extensions = [
     'sphinx.ext.napoleon',
-    'sphinxcontrib.apidoc',
+    'sphinx.ext.autodoc',
     'sphinx_rtd_theme',
 ]
 
@@ -62,9 +62,8 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
-# -- Options for apidoc -----------------------------------------------------
+# -- Options for autodoc ----------------------------------------------------
 #
-apidoc_module_dir = '../../src/comsar'
 
 # -- Options for Napoleon ---------------------------------------------------
 #

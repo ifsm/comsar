@@ -5,16 +5,31 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
+APIBUILD			= sphinx-apidoc
 SOURCEDIR     = source
+APIDIR				= $(SOURCEDIR)/generated/api
 BUILDDIR      = build
+TEMPLATEDIR		= source/_templates
+PKGDIR				= ../src/comsar
 
-# Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@echo "Use \`make <target>' with one of the following:"
+	@echo "\tbuild -- build the documentation."
+	@echo "\tfresh -- Clean previous builds and genereated documents; then rebuild."
+	@echo "\twipe  -- Wipe out built documentation."
 
-.PHONY: help Makefile
+build: api html
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+fresh: clean build
+
+api:
+	$(APIBUILD) -TefM --templatedir $(TEMPLATEDIR) -o $(APIDIR) $(PKGDIR)
+
+html:
+	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html $(SPHINXOPTS) 
+
+wipe:
+	rm -rf build/*
+
+clean: wipe
+	rm -rf source/generated/api/*
