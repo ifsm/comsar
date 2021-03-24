@@ -14,22 +14,16 @@ PKGDIR				= ../src/comsar
 
 help:
 	@echo "Use \`make <target>' with one of the following:"
-	@echo "\tbuild -- build the documentation."
-	@echo "\tfresh -- Clean previous builds and genereated documents; then rebuild."
-	@echo "\twipe  -- Wipe out built documentation."
-
-build: html
-
-fresh: clean build
-
-# api:
-#    $(APIBUILD) -TefM --templatedir $(TEMPLATEDIR) -o $(APIDIR) $(PKGDIR)
+	@echo "\thtml  -- build the documentation in HTML."
+	@echo "\tfresh -- Clean previous builds then rebuild."
 
 html:
 	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html $(SPHINXOPTS) 
 
-wipe:
+fresh: clean html
+
+clean:
 	rm -rf build/*
 
-clean: wipe
-	rm -rf source/generated/api/*
+# api:
+#    $(APIBUILD) -TefM --templatedir $(TEMPLATEDIR) -o $(APIDIR) $(PKGDIR)
