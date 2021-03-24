@@ -18,12 +18,12 @@ help:
 	@echo "\tfresh -- Clean previous builds and genereated documents; then rebuild."
 	@echo "\twipe  -- Wipe out built documentation."
 
-build: api html
+build: html
 
 fresh: clean build
 
-api:
-	$(APIBUILD) -TefM --templatedir $(TEMPLATEDIR) -o $(APIDIR) $(PKGDIR)
+# api:
+#    $(APIBUILD) -TefM --templatedir $(TEMPLATEDIR) -o $(APIDIR) $(PKGDIR)
 
 html:
 	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html $(SPHINXOPTS) 

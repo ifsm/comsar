@@ -30,8 +30,7 @@ CORR_GRAM_DEFAULT = container.CorrGramParams(wlen=2**10, n_delay=2**8,
 
 
 class TimbreTrack:
-    """Compute timbre track of an audio file.
-    """
+    """High-level interface for timbre feature extraction."""
     def __init__(self,
                  stft_params: Optional[container.StftParams] = None,
                  corr_dim_params: Optional[container.CorrDimParams] = None,
@@ -69,11 +68,13 @@ class TimbreTrack:
 
     @property
     def n_features(self) -> int:
-        """Number of features on track"""
+        """Returns:
+            Number of features on ``TimbreTrack``.
+        """
         return len(self.feature_names)
 
     def extract(self, path) -> pd.DataFrame:
-        """Perform extraction.
+        """Run TimbreTrack on audio file.
 
         Args:
             path:   Path to audio file.
