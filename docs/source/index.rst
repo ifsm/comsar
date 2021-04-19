@@ -25,10 +25,10 @@ objects, which represent a viewpoint.
    
 Open source
 ----------------------------------------
-comsar is an open source project. It is published under the permisive `BSD
+comsar is an open source project. It is published under the permissive `BSD
 3-Clause License`_. You may change and republish the code for any personal or
-commercial project. The source code is available on the `GitHub`_.
+commercial project. The `comsar source code`_ is available on GitHub.
 
 .. _BSD 3-Clause License: https://opensource.org/licenses/BSD-3-Clause
 
-.. _GitHub: https://github.com/ifsm/comsar
+.. _comsar source code: https://github.com/ifsm/comsar
