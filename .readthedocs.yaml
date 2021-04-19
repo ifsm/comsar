@@ -21,4 +21,3 @@ python:
     - requirements: docs/requirements.txt
     - method: setuptools
       path: .
-  system_packages: true
