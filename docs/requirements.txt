@@ -1,5 +1,6 @@
 apollon
 pandas
+soundfile
 numpy>=1.20
 Sphinx==3.5.1
 sphinx-rtd-theme==0.5.1
