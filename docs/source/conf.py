@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'COMSAR'
+project = 'comsar'
 copyright = '2021, Michael Blaß'
 author = 'Michael Blaß '
 
@@ -64,6 +64,8 @@ html_static_path = ['_static']
 
 # -- Options for autodoc ----------------------------------------------------
 #
+autodoc_mock_import = ['soundfile']
+autodoc_typehints = 'signature'
 
 # -- Options for Napoleon ---------------------------------------------------
 #
