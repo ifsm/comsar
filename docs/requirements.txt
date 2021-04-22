@@ -1,4 +1,4 @@
-apollon
+apollon>=0.1.2.1
 pandas
 numpy>=1.20
 Sphinx==3.5.1
