@@ -68,8 +68,10 @@ class TimbreTrack:
 
     @property
     def n_features(self) -> int:
-        """Returns:
-            Number of features on ``TimbreTrack``.
+        """Number of features.
+
+        Returns:
+            Number of audio features.
         """
         return len(self.feature_names)
 
