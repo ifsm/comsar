@@ -11,7 +11,7 @@ RhythmTrack
 TimbreTrack
 ========================================
 
-.. autoclass:: comsar.tracks.TimbreTrack
+.. autoclass:: comsar.tracks::TimbreTrack
    :members:
 
 FormTrack
