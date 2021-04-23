@@ -25,8 +25,8 @@ copyright = '2021, Michael Blaß'
 author = 'Michael Blaß '
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.3'
-version = '0.0.3'    # needed for epub
+release = '0.0.2'
+version = '0.0.2'    # needed for epub
 
 
 # -- General configuration ---------------------------------------------------
