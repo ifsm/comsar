@@ -64,7 +64,7 @@ html_static_path = ['_static']
 
 # -- Options for autodoc ----------------------------------------------------
 #
-autodoc_mock_import = ['soundfile']
+autodoc_mock_imports = ['soundfile']
 autodoc_typehints = 'signature'
 
 # -- Options for Napoleon ---------------------------------------------------
