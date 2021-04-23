@@ -1,5 +1,5 @@
 import sphinx_rtd_theme
-
+import comsar
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -25,8 +25,8 @@ copyright = '2021, Michael Blaß'
 author = 'Michael Blaß '
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.2'
-version = '0.0.2'    # needed for epub
+release = comsar.__version__
+version = release
 
 
 # -- General configuration ---------------------------------------------------
