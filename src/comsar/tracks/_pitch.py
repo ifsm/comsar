@@ -40,7 +40,12 @@ class PitchTrack:
                  ngram_params: Optional[ngramParams] = None) -> None:
         """
         Args:
-            seg_params:  Parameters for Segmentation.
+            seg_params:         Parameters for Segmentation.
+            tonalsystem_params: Parameters for tonal system extraction.
+            ngram_params:       Parameters for n-gram computation.
+
+        If any of the arguments is `None`, comsar will fall back to their
+        respective default parameters.
         """
         self.params = PitchTrackParams(seg_params or SEGMENTATION_DEFAULT)
 
@@ -97,31 +102,43 @@ class PitchTrack:
     def extract_TonalSystem(self, data: np.ndarray, dcent: float, dts: float, minlen: int, mindev: int, noctaves: int, f0: float) -> np.ndarray:
         """Pitch cummulation and Tonal System Extraction
 
-        def extract_TonalSystem(self, data: np.ndarray) -> np.ndarray:
-        Input:
-        data: Freuencies of adjacent segments of a sound file
-        dcent: Accummulation precision in cent, examples: fine grain: dcent = 1, semitone grain. decent = 100
-        dts: standard deviation of tonal system pitch entry
-            used for correlation with accumulated tonal system from sound
-        minlen: Minimum length of adjacent cent values to be accepted as an event (a note, etc.)
-        mindev: minimum deviation allowed to qualify as note in cent:
-        noctaves: number of octaves starting from f0, default: 8
-        f0: start frequency of octaves, default: 27.5 Hz => subcontra A
+        Args:
+            data: Freuencies of adjacent segments of a sound file
+            dcent: Accummulation precision in cent. For example, use `dcent` =
+                   1 for fine grain extraction, or `dcent` = 100 for semitone
+                   grain.
+            dts: Standard deviation of tonal system pitch entry used for
+                 correlation with accumulated tonal system from sound.
+            minlen: Minimum length of adjacent cent values to be accepted as
+                    an event (a note, etc.)
+            mindev: Minimum deviation allowed to qualify as note in cent.
+            noctaves: Number of octaves starting from `f0`. Defaults to
+                      `noctaves` = 8.
+            f0: Start frequency of octaves Hertz. Defaults to subcontra A at
+                `f0` = 27.5.
 
-        Return:
-        c: Cummulated frequency spectrum
-        co: Cummulated frequency spectrum within one octave, where the frequency of maximum amplitude is
-            vector entry zero and co length is defined by dcent, example: with dcent = 1, co length = 1200
-        maxf: Frequency of maximum amplitude of cummulated spectrum
-        retNames: Names of the ten best matching scales meeting the input frequency data
-        retScale: Theoretical scale values of the ten best matching scales
-        retValue: Contribution of each scale step to the overall correlation for each of the ten best-matching scales
-        retCorr: Overall correlation for the whole scale for each of the ten best-matching scales
-        nnotes: Number of notes in sound
-        notes: Notes of sound as array of pitch_type class instantiations,
-        with note type ('note', 'pause', etc.), note start, note stop, note args, where arg1 is note in cent above f0
-        cn: Accumulated tonal system spectrum within one octave with precision dcent from pitch events only,
-        Compared to c0 (see above), which is accululated spectrum over all pitches in data
+        Returns:
+            c: Cummulated frequency spectrum
+            co: Cummulated frequency spectrum within one octave, where the
+                frequency of maximum amplitude is vector entry zero and length
+                of `co` is defined by `dcent`. Example: with `dcent` = 1,
+                `len(co)` = 1200.
+            maxf: Frequency of maximum amplitude of cummulated spectrum.
+            retNames: Names of the ten best matching scales meeting the input
+                      frequency data
+            retScale: Theoretical scale values of the ten best matching scales.
+            retValue: Contribution of each scale step to the overall
+                      correlation for each of the ten best-matching scales.
+            retCorr: Overall correlation for the whole scale for each of the
+                     ten best-matching scales.
+            nnotes: Number of notes in sound.
+            notes: Notes of sound as array of `pitch_type`, with note type
+                   ('note', 'pause', etc.), note start, note stop, note args,
+                   where arg1 is note in cent above `f0`.
+            cn: Accumulated tonal system spectrum within one octave with
+                precision `dcent` from pitch events only, compared to c0
+                (see above), which is accululated spectrum over all pitches in
+                `data`.
 
         dcent = self.TSparams.dcent
         print(dcent)
@@ -200,30 +217,32 @@ class PitchTrack:
 
             pos = pos + 1
 
-        #Detect tonal system
-        """Find strongest pitch in cent over all octaves"""
+        # Detect tonal system
+        # Find strongest pitch in cent over all octaves
         for i in range(1,nnotes):
             for j in range(notes[i].start, notes[i].stop):
                 if cent[j] <= n and cent[j] > 0:
                     c[int(cent[j])] += 1
 
-        #Accummulate cents into octave
+        # Accummulate cents into octave
         maxa = max(c)
         maxs = np.where(c == maxa)[0][0]
         maxf = f0 * np.power(root, maxs)
 
-        #Accumulate pitches into ocatve
+        # Accumulate pitches into ocatve
         cn=np.zeros(no)
         for i in range(0,nnotes):
             cn[int(np.mod(notes[i].arg1-maxs,no))] += 1
 
-        """Cummulate cent values into one octave with strongest cent, maxs, as fundamental frequency of tonal system"""
+        # Cummulate cent values into one octave with strongest cent, maxs, as
+        # fundamental frequency of tonal system
         for i in range(1,n):
                 co[int(np.mod(i-maxs,no))] += c[i]
 
         co = co/np.linalg.norm(co)
 
-        """Sum amplitudes in co at scale positions matching cent values of all theoretical scales in valiable ts"""
+        # Sum amplitudes in co at scale positions matching cent values of all
+        # theoretical scales in valiable ts
         ts=np.zeros(scales.shape[0])
 
         ar=np.arange(0,1200,dcent)
@@ -231,14 +250,15 @@ class PitchTrack:
             ts[i] += co[0]
             for j in range(0,11):
                 if np.logical_not(np.isnan(scales.iloc[i][j]/dcent)):
-                    #Correlate each pitch of tonal system as a gauss shape with calculated tonal system from sound
+                    # Correlate each pitch of tonal system as a gauss shape
+                    # with calculated tonal system from sound
                     ts[i] += np.sum(co*2.718281**(-(scales.iloc[i][j]/dcent-1-ar)**2/dts**2))
-                    #aa=np.zeros(no)
-                    #aa[int(scales.iloc[i][j]/dcent-1)] = 1
-                    #ts[i] += np.sum(co*aa)
-                    #ts[i] += co[int(scales.iloc[i][j]/dcent-1)]
+                    # aa=np.zeros(no)
+                    # aa[int(scales.iloc[i][j]/dcent-1)] = 1
+                    # ts[i] += np.sum(co*aa)
+                    # ts[i] += co[int(scales.iloc[i][j]/dcent-1)]
 
-        """Detecting the nret = 10 best matching scales in variable tss"""
+        # Detecting the nret = 10 best matching scales in variable tss
         nret=10
         retNames = np.empty([nret],dtype='object')
         retCorr = np.empty([nret],dtype=float)
@@ -265,21 +285,34 @@ class PitchTrack:
         """
         Args:
 
-        minnotelength: minimum length of a note to qualify as melody to be used in ngram calculation, value in analysis frames
-        ngram: ngram depth, 0: no ngram calculation 2: 2-gram, 3: 3-gram, 4: 4-gram, 5: 5-gram.
-        ngram calculation is performed over intervals, not absolute pitches
-        ngcentmin: minimum interval step in cent to qualify interval to be used in ngram calculation
-        ngcentmax: +-maximum interval to be used for ngram calculation, e.g. 1200 allows for +-1200 cent intervals
-        nngram: number of largest ngram histograms to be calculated, e.g. 10
+            minnotelength: Minimum length of a note to qualify as melody to be
+                           used in ngram calculation, value in analysis frames.
+            ngram: ngram depth:
+                   0: no ngram calculation
+                   2: 2-gram,
+                   3: 3-gram,
+                   4: 4-gram,
+                   5: 5-gram.
+                   ngram calculation is performed over intervals, not absolute pitches.
+            ngcentmin: Minimum interval step in cent to qualify interval to be
+                       used in ngram calculation.
+            ngcentmax: +-maximum interval to be used for ngram calculation,
+                       e.g. 1200 allows for +-1200 cent intervals.
+            nngram: number of largest ngram histograms to be calculated,
+                    e.g. 10.
 
         Returns:
+            ngrams: array of nngram ngrams, most frequently occuring in sound.
+                    For example, 3-gram,nngram = 10, ngcentmax = 1200 ->
+                    10 ngrams x 2 intervals (3-grams) = 20 values in array,
+                    [ngram 1 1st interval, ngram 1, 2nd interval, ngram 2 1st
+                    interval, ngram 2, 2nd interval,...], most frequent ngram first
+                    ngram value coding: ngcentmax = 12000 -> +-12 intervals.
+                    ngram value = 0 -> -12 half tones, ngram value = 12 -> 0 half
+                    tones, ngram value = 24 -> +12 half tones.
 
-        ngrams: array of nngram ngrams, most frequently occuring in sound.
-        E.g. 3-gram,nngram = 10, ngcentmax = 1200 -> 10 ngrams x 2 intervals (3-grams) = 20 values in array
-        [ngram 1 1st interval, ngram 1, 2nd interval, ngram 2 1st interval, ngram 2, 2nd interval,...], most frequent ngram first
-        ngram value coding: ngcentmax = 12000 -> +-12 intervals. ngram value = 0 -> -12 half tones, ngram value = 12 -> 0 half tones, ngram value = 24 -> +12 half tones
-
-        notesinngram: notes used in ngram calculation as subset of notes applying ninnotelength condition
+            notesinngram: Notes used in ngram calculation as subset of notes
+                          applying ninnotelength condition.
         """
         dcent = self.TSparams.dcent
         minnotelength = self.ngparams.mintolength
@@ -291,21 +324,23 @@ class PitchTrack:
         ngrams = []
         if (ngram > 1 and ngram <= 5):
             ngramsall=[]
-            numgram = 0 # number of different ngrams in sound
-            #Calculating ngrams
+            numgram = 0    # number of different ngrams in sound
+
+            # Calculating ngrams
             notesinngram = []
-            #i = 0
+            # i = 0
             noteindex = []
             for i in range(0,nnotes-ngram):
                 step = np.zeros(ngram-1)
-                #Does note qualify for ngram in terms of note length
+
+                # Does note qualify for ngram in terms of note length
                 if ((notes[i].stop - notes[i].start) >= minnotelength):
                     k = 0
                     l = 1
                     kold = 0
-                    #Construct ngram
+                    # Construct ngram
                     while k < ngram-1 and i+l < nnotes-ngram:
-                        #Does note qualify for ngram in terms of note length
+                        # Does note qualify for ngram in terms of note length
                         if ((notes[i+l].stop - notes[i+l].start) >= minnotelength):
                             step[k] = notes[i+l].arg1 - notes[i+kold].arg1
                             k += 1
@@ -313,14 +348,14 @@ class PitchTrack:
                             l += 1
                         else:
                             l += 1
-                    #Is ngram within defined region of ngcentmin and ngcentmax
+                    # Is ngram within defined region of ngcentmin and ngcentmax
                     if (len([x for x in step if np.abs(x)  >= ngcentmin/dcent and np.abs(x) <= ngcentmax/dcent]) == (ngram-1)):
                         ngramsall.append(step)
                         numgram += 1
                         notesinngram.append(notes[i])
 
-            #Calculating ngram histogram and seeking for nngram most frequent ngrams
-            #Equidistant 12-tone tonal system used
+            # Calculating ngram histogram and seeking for nngram most frequent
+            # ngrams. Equidistant 12-tone tonal system used
             justint = 100
             ngrams = np.zeros((ngram-1)*nngram)
             histrange = int(ngcentmax/justint)
@@ -336,12 +371,12 @@ class PitchTrack:
 
             nmax = 0
             while nmax < nngram:
-                #number of positions with maximum ngram occurance could be larger than 1
+                # number of positions with maximum ngram occurance could be larger than 1
                 nn=len(np.where(hist==hist.max())[0])
-                #Allow only up to nngram
+                # Allow only up to nngram
                 if ((nmax+nn) > nngram):
                     nn = nngram - nmax
-                    #print('hinaus')
+                    # print('hinaus')
                 maxvals = np.where(hist==hist.max())
                 for i in range(0,nn):
                     for k in range(0,ngram-1):
@@ -378,7 +413,7 @@ def acf_pitch(sig: np.ndarray, fps: int, **kwargs) -> np.ndarray:
 
             ptch[i] = fps/max_idx
 
-    #Detect artifacts
+    # Detect artifacts
             R = np.mod(n_perseg,fps/(ptch[i]*2))
             p = fps/(ptch[i]*2)
             if R < p/2:
@@ -413,10 +448,17 @@ def wavelet(sig: np.array, fps: int, waveletnum: int) -> float:
 class pitch_type:
 
     def __init__(self, ptype: str, pstart: int, pstop: int, pa1: float, pa2: float) -> None:
+        """
+        Args: 
+            ptypes: Pitch type from ('note', 'pause', 'transient', 'vibrato',
+                    'melisma').
+            pstart:
+            pstop:
+            pa1:
+            pa2:
+        """
 
-        """Possible pitch types"""
         self.pitch_types = ('note', 'pause', 'transient', 'vibrato', 'melisma')
-        """Amount of types"""
         ntypes = 5
 
         self.type = ptype
