@@ -165,7 +165,7 @@ class TimbreTrackCorrGram:
         """Number of features on track"""
         return len(self.feature_names)
 
-    def extract(self, path) -> pd.DataFrame:
+    def extract(self, path) -> TrackResult:
         """Perform extraction.
         """
         snd = AudioFile(path)
@@ -194,8 +194,8 @@ class TimbreTrackCorrGram:
         snd.close()
 
         meta = TrackMeta(comsar.__version__, datetime.utcnow(), snd.file_name)
-        out = pd.DataFrame(data=out, columns=self.feature_names)
-        return TrackResult(meta, self.params, out)
+        data = pd.DataFrame(data=out, columns=self.feature_names)
+        return TrackResult(meta, self.params, data)
 
     def _worker(self, idx, func, args, kwargs) -> np.ndarray:
         print(self.feature_names[idx], end=' ... ')
