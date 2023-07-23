@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from apollon.tools import time_stamp
 from comsar.tracks import TimbreTrack
 
 

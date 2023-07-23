@@ -4,8 +4,8 @@ import unittest
 
 from hypothesis import given
 
-from comsar._tracks.utilities import TimbreTrackParams, TrackResult
-from utils import timbre_track_results
+from comsar.tracks.utilities import TrackResult
+from .. utils import timbre_track_results
 
 
 class TestTrackResult(unittest.TestCase):
