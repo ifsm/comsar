@@ -44,3 +44,15 @@ class TimbreTrackCorrGramParams(TrackParams):
     stft: StftParams
     corr_dim: CorrDimParams
     corr_gram: CorrGramParams
+
+
+@dataclass
+class TonalSystemParams(Params):
+    """Parameter set for Tonal System analysis"""
+    #_schema: ClassVar[types.Schema] = io.json.load_schema('TonalSystem')
+    dcent: int = 1
+    dts: float = 0.1
+    minlen: int = 3
+    mindev: int = 60
+    noctaves: int = 8
+    f0: float = 27.5
