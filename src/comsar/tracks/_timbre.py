@@ -1,6 +1,4 @@
 """comsar/tracks/timbre.py -- TimbreTack implementation
-License: BSD-3-Clasuse
-Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
 from datetime import datetime
 from timeit import default_timer as timer

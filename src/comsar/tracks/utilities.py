@@ -1,6 +1,4 @@
 """comsar/tracks/untilities.py -- Utilities
-License: BSD-3-Clasuse
-Copyright (C) 2020, Michael Blaß, michael.blass@uni-hamburg.de
 """
 import datetime
 import pathlib
