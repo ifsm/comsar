@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "comsar"
-version = "0.0.3"
+version = "0.0.4-rc1"
 description = "Computational Music and Sound Archiving"
 authors = ["Michael Blaß <mblass@posteo.net>"]
 license = "BSD-3-Clause"
