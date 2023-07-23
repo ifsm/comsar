@@ -56,3 +56,14 @@ class TonalSystemParams(Params):
     mindev: int = 60
     noctaves: int = 8
     f0: float = 27.5
+
+
+@dataclass
+class ngramParams(Params):
+    """Parameter set for n-gram analysis"""
+    #_schema: ClassVar[types.Schema] = io.json.load_schema('ngram')
+    minnotelength: int = 10
+    ngram: int = 3
+    ngcentmin: int = 0
+    ngcentmax: int = 1200
+    nngram: int = 10
