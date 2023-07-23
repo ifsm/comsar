@@ -441,12 +441,8 @@ def acf_pitch(sig: np.ndarray, fps: int, **kwargs) -> np.ndarray:
                 ptch[i] = fps/(max_idx-1+maxw/ninterpol)
     return ptch
 
-def wavelet(sig: np.array, fps: int, waveletnum: int) -> float:
-    """Wavelet Transform"""
-
 
 class pitch_type:
-
     def __init__(self, ptype: str, pstart: int, pstop: int, pa1: float, pa2: float) -> None:
         """
         Args: 
