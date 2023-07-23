@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import ClassVar
 
 from apollon.container import Params
-from apollon.signal.container import StftParams, CorrDimParams
+from apollon.signal.container import StftParams, CorrDimParams, CorrGramParams
 from apollon import types
 
 
@@ -43,3 +43,4 @@ class TimbreTrackCorrGramParams(TrackParams):
     """Parameter set for TimbreTrack"""
     stft: StftParams
     corr_dim: CorrDimParams
+    corr_gram: CorrGramParams
