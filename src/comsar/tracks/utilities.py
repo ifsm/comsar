@@ -12,7 +12,8 @@ from apollon.tools import standardize
 
 from . models import TrackMeta, TrackParams, TimbreTrackParams
 
-T = TypeVar('T')
+
+T = TypeVar('T', bound="TrackResult")
 
 class TrackResult:
     """Provide track results."""
