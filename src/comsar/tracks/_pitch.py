@@ -17,7 +17,7 @@ from apollon.signal import container, features
 
 import comsar
 from comsar.tracks.utilities import TrackResult
-from comsar.tracks.models import TrackMeta, PitchTrackParams, TonalSystemParams, ngramParams
+from comsar.tracks.models import PitchType, TrackMeta, PitchTrackParams, TonalSystemParams, ngramParams
 
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
@@ -132,7 +132,7 @@ class PitchTrack:
             retCorr: Overall correlation for the whole scale for each of the
                      ten best-matching scales.
             nnotes: Number of notes in sound.
-            notes: Notes of sound as array of `pitch_type`, with note type
+            notes: Notes of sound as array of `PitchType`, with note type
                    ('note', 'pause', etc.), note start, note stop, note args,
                    where arg1 is note in cent above `f0`.
             cn: Accumulated tonal system spectrum within one octave with
@@ -209,7 +209,7 @@ class PitchTrack:
                             if cent[j] <= n and cent[j] > 0:
                                 cn[int(cent[j])] += 1
                         maxa = max(cn)
-                        notes.append(pitch_type('note', pos, pos + minlen + cont -1, np.where(cn == maxa)[0][0], 0))
+                        notes.append(PitchType('note', pos, pos+minlen+cont-1, np.where(cn==maxa)[0][0], 0))
                         debug[pos] = notes[nnotes].start
                         pos = pos + minlen + cont
                         nnotes = nnotes + 1
@@ -440,25 +440,3 @@ def acf_pitch(sig: np.ndarray, fps: int, **kwargs) -> np.ndarray:
 
                 ptch[i] = fps/(max_idx-1+maxw/ninterpol)
     return ptch
-
-
-class pitch_type:
-    def __init__(self, ptype: str, pstart: int, pstop: int, pa1: float, pa2: float) -> None:
-        """
-        Args: 
-            ptypes: Pitch type from ('note', 'pause', 'transient', 'vibrato',
-                    'melisma').
-            pstart:
-            pstop:
-            pa1:
-            pa2:
-        """
-
-        self.pitch_types = ('note', 'pause', 'transient', 'vibrato', 'melisma')
-        ntypes = 5
-
-        self.type = ptype
-        self.start = pstart
-        self.stop = pstop
-        self.arg1 = pa1
-        self.arg2 = pa2

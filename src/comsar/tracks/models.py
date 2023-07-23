@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 from apollon.container import Params
 from apollon.signal.container import StftParams, CorrDimParams, CorrGramParams
@@ -73,3 +73,12 @@ class ngramParams(Params):
     ngcentmin: int = 0
     ngcentmax: int = 1200
     nngram: int = 10
+
+
+@dataclass(frozen=True)
+class PitchType:
+    type_: Literal["note", "pause", "transient", "vibrato", "melisma"]
+    start: int
+    stop: int
+    arg1: float
+    arg2: float
