@@ -75,7 +75,7 @@ class TimbreTrack:
         """
         return len(self.feature_names)
 
-    def extract(self, path) -> pd.DataFrame:
+    def extract(self, path) -> TrackResult:
         """Run TimbreTrack on audio file.
 
         Args:
@@ -109,9 +109,9 @@ class TimbreTrack:
         file_meta = SourceMeta(*snd.file_name.split('.'), snd.hash)
         track_meta = TrackMeta(comsar.__version__, datetime.utcnow(),
                                file_meta)
-        out = pd.DataFrame(data=out, columns=self.feature_names)
+        data = pd.DataFrame(data=out, columns=self.feature_names)
         snd.close()
-        return TrackResult(track_meta, self.params, out)
+        return TrackResult(track_meta, self.params, data)
 
     def _worker(self, idx, func, args, kwargs) -> np.ndarray:
         print(self.feature_names[idx], end=' ... ')
