@@ -148,12 +148,7 @@ class PitchTrack:
         noctaves = self.TSparams.noctaves
         f0 = self.TSparams.f0
         """
-
-        scales = pd.read_csv('scales.csv', index_col=0)
-        for i in range(0,len(scales)):
-            for j in range(0,12):
-                if np.isnan(scales.iloc[i][j]):
-                    scales.iloc[i][j] = 0
+        scales = pd.read_csv('scales.csv', index_col=0).fillna(0.0)
 
         root=np.power(2,1/(1200/dcent))
         root1200=1/np.log(root)
