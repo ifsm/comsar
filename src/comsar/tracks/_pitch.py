@@ -2,11 +2,10 @@
 
 2022, Rolf Bader
 """
-from dataclasses import dataclass
 from timeit import default_timer as timer
 from typing import Any, Optional
+
 from scipy import interpolate
-from scipy.misc import derivative
 
 import numpy as np
 import pandas as pd
@@ -14,17 +13,11 @@ import apollon.audio as apa
 import apollon.segment as aps
 import apollon.signal.tools as ast
 import apollon.tools as apt
-
-from apollon.audio import AudioFile
-"""from apollon.segment import Segmentation"""
 from apollon.signal import container, features
-from apollon.signal.spectral import StftSegments
-from apollon.tools import time_stamp
-
-import apollon.signal as signal
 
 import comsar
-from comsar._tracks.utilities import TrackMeta, TrackParams, TrackResult, PitchTrackParams, TonalSystemParams, ngramParams
+from comsar.tracks.utilities import TrackResult
+from comsar.tracks.models import TrackMeta, PitchTrackParams, TonalSystemParams, ngramParams
 
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
