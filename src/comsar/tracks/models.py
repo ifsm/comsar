@@ -47,6 +47,12 @@ class TimbreTrackCorrGramParams(TrackParams):
 
 
 @dataclass
+class PitchTrackParams(TrackParams):
+    """Parameter set for TimbreTrack"""
+    segmentation: StftParams
+
+
+@dataclass
 class TonalSystemParams(Params):
     """Parameter set for Tonal System analysis"""
     #_schema: ClassVar[types.Schema] = io.json.load_schema('TonalSystem')
