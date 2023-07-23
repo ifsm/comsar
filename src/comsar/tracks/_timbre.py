@@ -13,8 +13,10 @@ from apollon.signal import container, features
 from apollon.signal.spectral import StftSegments
 
 import comsar
-from . utilities import (TrackMeta, TrackResult, SourceMeta,
-                         TimbreTrackParams, TimbreTrackCorrGramParams)
+from . utilities import TrackResult
+from . models import (
+    TrackMeta, SourceMeta, TimbreTrackParams, TimbreTrackCorrGramParams
+)
 
 STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
                                     n_perseg=2**15, n_overlap=2**14,

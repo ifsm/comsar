@@ -1,61 +1,18 @@
 """comsar/tracks/untilities.py -- Utilities
 """
-import datetime
 import pathlib
 import pickle
-from typing import ClassVar, Type, TypeVar, Union
+from typing import Type, TypeVar, Union
 
-from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
 from apollon import io
-from apollon import container
-from apollon.signal import container as asc
 from apollon.tools import standardize
-from apollon import types
 
+from . models import TrackMeta, TrackParams, TimbreTrackParams
 
 T = TypeVar('T')
-
-
-@dataclass
-class SourceMeta(container.Params):
-    """Source file meta data."""
-    _schema: ClassVar[types.Schema] = None
-    name: str
-    extension: str
-    hash_: str
-
-
-@dataclass
-class TrackMeta(container.Params):
-    """Track meta data."""
-    _schema: ClassVar[types.Schema] = None
-    version: str
-    extraction_date: datetime.datetime
-    source: SourceMeta
-
-
-@dataclass
-class TrackParams(container.Params):
-    """Track parameter base class."""
-    _schema: ClassVar[types.Schema] = None
-
-
-@dataclass
-class TimbreTrackParams(TrackParams):
-    """Parameter set for TimbreTrack"""
-    stft: asc.StftParams
-    corr_dim: asc.CorrDimParams
-
-
-@dataclass
-class TimbreTrackCorrGramParams(TrackParams):
-    """Parameter set for TimbreTrack"""
-    stft: asc.StftParams
-    corr_dim: asc.CorrDimParams
-
 
 class TrackResult:
     """Provide track results."""
