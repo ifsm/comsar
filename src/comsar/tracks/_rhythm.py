@@ -1,9 +1,7 @@
 import logging
 
+from apollon import onsets, segment, tools
 from apollon.signal import spectral
-from apollon import tools
-from apollon import onsets
-from apollon import segment
 
 
 def rhythm_track(snd: AudioFile) -> dict:
@@ -16,24 +14,24 @@ def rhythm_track(snd: AudioFile) -> dict:
     Returns:
         Rhythm track parameters and data.
     """
-    logging.info('Starting rhythm track for {!s}'.format(snd.file))
+    logging.info("Starting rhythm track for {!s}".format(snd.file))
     onsets = FluxOnsetDetector(snd.data, snd.fps)
     segs = segment.by_onsets(snd.data, 2**11, onsets.index())
-    spctr = Spectrum(segs, snd.fps, window='hamming', n_fft=2**15)
+    spctr = Spectrum(segs, snd.fps, window="hamming", n_fft=2**15)
 
     onsets_features = {
-        'peaks': onsets.peaks,
-        'index': onsets.index(),
-        'times': onsets.times(snd.fps)
+        "peaks": onsets.peaks,
+        "index": onsets.index(),
+        "times": onsets.times(snd.fps),
     }
 
     track_data = {
-        'meta': {'source': str(snd.file.absolute()),
-                 'time_stamp': time_stamp()},
-        'params': {'onsets': onsets.params(), 'spectrum': spctr.params()},
-        'features': {'onsets': onsets_features,
-                     'spectrum':
-                      spctr.extract(cf_low=100, cf_high=9000).as_dict()}
+        "meta": {"source": str(snd.file.absolute()), "time_stamp": time_stamp()},
+        "params": {"onsets": onsets.params(), "spectrum": spctr.params()},
+        "features": {
+            "onsets": onsets_features,
+            "spectrum": spctr.extract(cf_low=100, cf_high=9000).as_dict(),
+        },
     }
-    logging.info(f'Done with rhythm track for {snd.file!s}.')
+    logging.info(f"Done with rhythm track for {snd.file!s}.")
     return track_data

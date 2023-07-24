@@ -2,14 +2,15 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import ClassVar, Literal
 
-from apollon.container import Params
-from apollon.signal.container import StftParams, CorrDimParams, CorrGramParams
 from apollon import types
+from apollon.container import Params
+from apollon.signal.container import CorrDimParams, CorrGramParams, StftParams
 
 
 @dataclass
 class SourceMeta(Params):
     """Source file meta data."""
+
     _schema: ClassVar[types.Schema] = None
     name: str
     extension: str
@@ -19,6 +20,7 @@ class SourceMeta(Params):
 @dataclass
 class TrackMeta(Params):
     """Track meta data."""
+
     _schema: ClassVar[types.Schema] = None
     version: str
     extraction_date: datetime
@@ -28,12 +30,14 @@ class TrackMeta(Params):
 @dataclass
 class TrackParams(Params):
     """Track parameter base class."""
+
     _schema: ClassVar[types.Schema] = None
 
 
 @dataclass
 class TimbreTrackParams(TrackParams):
     """Parameter set for TimbreTrack"""
+
     stft: StftParams
     corr_dim: CorrDimParams
 
@@ -41,6 +45,7 @@ class TimbreTrackParams(TrackParams):
 @dataclass
 class TimbreTrackCorrGramParams(TrackParams):
     """Parameter set for TimbreTrack"""
+
     stft: StftParams
     corr_dim: CorrDimParams
     corr_gram: CorrGramParams
@@ -49,13 +54,15 @@ class TimbreTrackCorrGramParams(TrackParams):
 @dataclass
 class PitchTrackParams(TrackParams):
     """Parameter set for TimbreTrack"""
+
     segmentation: StftParams
 
 
 @dataclass
 class TonalSystemParams(Params):
     """Parameter set for Tonal System analysis"""
-    #_schema: ClassVar[types.Schema] = io.json.load_schema('TonalSystem')
+
+    # _schema: ClassVar[types.Schema] = io.json.load_schema('TonalSystem')
     dcent: int = 1
     dts: float = 0.1
     minlen: int = 3
@@ -67,7 +74,8 @@ class TonalSystemParams(Params):
 @dataclass
 class ngramParams(Params):
     """Parameter set for n-gram analysis"""
-    #_schema: ClassVar[types.Schema] = io.json.load_schema('ngram')
+
+    # _schema: ClassVar[types.Schema] = io.json.load_schema('ngram')
     minnotelength: int = 10
     ngram: int = 3
     ngcentmin: int = 0

@@ -6,19 +6,20 @@ from typing import Type, TypeVar, Union
 
 import numpy as np
 import pandas as pd
-
 from apollon import io
 from apollon.tools import standardize
 
-from . models import TrackMeta, TrackParams, TimbreTrackParams
+from .models import TimbreTrackParams, TrackMeta, TrackParams
 
+T = TypeVar("T", bound="TrackResult")
 
-T = TypeVar('T', bound="TrackResult")
 
 class TrackResult:
     """Provide track results."""
-    def __init__(self, meta: TrackMeta, params: TrackParams,
-                 data: pd.DataFrame) -> None:
+
+    def __init__(
+        self, meta: TrackMeta, params: TrackParams, data: pd.DataFrame
+    ) -> None:
         self._meta = meta
         self._params = params
         self._data = data
@@ -55,14 +56,15 @@ class TrackResult:
 
     def to_dict(self) -> dict:
         """Serialize TrackResults to dictionary."""
-        return {'meta': self._meta.to_dict(),
-                'params': self._params.to_dict(),
-                'data': self._data.to_dict(orient='list')}
+        return {
+            "meta": self._meta.to_dict(),
+            "params": self._params.to_dict(),
+            "data": self._data.to_dict(orient="list"),
+        }
 
     def to_json(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize TrackResults to JSON."""
         io.json.dump(self.to_dict(), path)
-
 
     def to_mongo(self, db_con) -> None:
         """Write TrackResults to open MongoDB connection:"""
@@ -71,21 +73,21 @@ class TrackResult:
     def to_pickle(self, path: Union[str, pathlib.Path]) -> None:
         """Serialize Track Results to pickle."""
         path = pathlib.Path(path)
-        with path.open('wb') as fobj:
+        with path.open("wb") as fobj:
             pickle.dump(self, fobj)
 
     @classmethod
     def read_json(cls: Type[T], path: Union[str, pathlib.Path]) -> T:
         """Read TrackResults form json."""
         raw = io.json.load(path)
-        meta = TrackMeta.from_dict(raw['meta'])
-        params = TimbreTrackParams.from_dict(raw['params'])
-        data = pd.DataFrame(raw['data'])
+        meta = TrackMeta.from_dict(raw["meta"])
+        params = TimbreTrackParams.from_dict(raw["params"])
+        data = pd.DataFrame(raw["data"])
         return cls(meta, params, data)
 
     @classmethod
     def read_pickle(cls: Type[T], path: Union[str, pathlib.Path]) -> T:
         """Read pickled TrackResults."""
         path = pathlib.Path(path)
-        with path.open('rb') as fobj:
+        with path.open("rb") as fobj:
             return pickle.load(fobj)
