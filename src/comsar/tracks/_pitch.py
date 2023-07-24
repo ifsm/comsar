@@ -2,6 +2,7 @@
 
 2022, Rolf Bader
 """
+from importlib import resources
 from timeit import default_timer as timer
 from typing import Any, Optional
 
@@ -170,7 +171,10 @@ class PitchTrack:
         noctaves = self.TSparams.noctaves
         f0 = self.TSparams.f0
         """
-        scales = pd.read_csv("scales.csv", index_col=0).fillna(0.0)
+        trav = resources.files("comsar.data")
+        with resources.as_file(trav) as path:
+            scales_path = path.joinpath("scales.csv")
+            scales = pd.read_csv(scales_path, index_col=0).fillna(0.0)
 
         root = np.power(2, 1 / (1200 / dcent))
         root1200 = 1 / np.log(root)
