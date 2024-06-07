@@ -1,3 +1,7 @@
-import pkg_resources as _pkg
+"""
+Computational Music and Sound Archiving
+"""
 
-__version__ = _pkg.get_distribution('comsar').version
+from importlib import metadata as _meta
+
+__version__ = _meta.version("comsar")
