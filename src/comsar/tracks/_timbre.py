@@ -117,7 +117,6 @@ class TimbreTrack:
 
         out = np.zeros((segs.n_segs, self.n_features))
         for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
-            print(f"{fun=}, {arg=}, {kwarg=}")
             out[:, i] = self._worker(i, fun, arg, kwarg)
 
         file_meta = SourceMeta(
