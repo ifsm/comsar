@@ -10,50 +10,63 @@ import numpy as np
 import pandas as pd
 
 from apollon.audio import AudioFile
-from apollon.segment import Segmentation
-from apollon.signal import container, features
+from apollon.segment import ArraySegmentation
+from apollon.segment.models import SegmentationParams
+from apollon.signal import features
+from apollon.signal import models as asm
 from apollon.signal.spectral import StftSegments
 
 import comsar
 from . utilities import (TrackMeta, TrackResult, SourceMeta,
                          TimbreTrackParams, TimbreTrackCorrGramParams)
 
-STFT_DEFAULT = container.StftParams(fps=44100, window='hamming', n_fft=None,
+STFT_DEFAULT = asm.StftParams(fps=44100, window='hamming', n_fft=None,
                                     n_perseg=2**15, n_overlap=2**14,
                                     extend=True, pad=True)
 
-CORR_DIM_DEFAULT = container.CorrDimParams(delay=14, m_dim=80, n_bins=1000,
+CORR_DIM_DEFAULT = asm.CorrDimParams(delay=14, m_dim=80, n_bins=1000,
                                            scaling_size=10)
 
-CORR_GRAM_DEFAULT = container.CorrGramParams(wlen=2**10, n_delay=2**8,
+CORR_GRAM_DEFAULT = asm.CorrGramParams(wlen=2**10, n_delay=2**8,
                                              total=True)
 
 
 class TimbreTrack:
     """High-level interface for timbre feature extraction."""
     def __init__(self,
-                 stft_params: Optional[container.StftParams] = None,
-                 corr_dim_params: Optional[container.CorrDimParams] = None,
+                 stft_params: Optional[asm.StftParams] = None,
+                 corr_dim_params: Optional[asm.CorrDimParams] = None,
                  ) -> None:
         """
         Args:
             stft_params:        Parameter for STFT.
             corr_dim_params:    Parameter set for correlation dimension.
         """
-        self.params = TimbreTrackParams(stft_params or STFT_DEFAULT,
-                                        corr_dim_params or CORR_DIM_DEFAULT)
+        self.params = TimbreTrackParams(stft = stft_params or STFT_DEFAULT,
+                                        corr_dim = corr_dim_params or CORR_DIM_DEFAULT)
 
-        self.cutter = Segmentation(self.params.stft.n_perseg,
+        self.cutter = ArraySegmentation(self.params.stft.n_perseg,
                                    self.params.stft.n_overlap,
                                    self.params.stft.extend,
                                    self.params.stft.pad)
 
-        self.stft = StftSegments(self.params.stft.fps, self.params.stft.window,
+        _seg_params = SegmentationParams(
+                n_perseg=self.params.stft.n_perseg,
+                n_overlap=self.params.stft.n_overlap,
+                extend=self.params.stft.extend,
+                pad=self.params.stft.pad)
+
+        self.stft = StftSegments(self.params.stft.fps, _seg_params, self.params.stft.window,
                                  self.params.stft.n_fft)
 
-        self.feature_names = ('SpectralCentroid', 'SpectralSpread',
-                              'SpectralFlux', 'Roughness', 'Sharpness',
-                              'SPL', 'CorrelationDimension')
+        self.feature_names = (
+                'SpectralCentroid',
+                'SpectralSpread',
+                'SpectralFlux',
+                'Roughness',
+                'Sharpness',
+                'SPL',
+                'CorrelationDimension')
 
         self.funcs = [features.spectral_centroid,
                       features.spectral_spread,
@@ -95,20 +108,28 @@ class TimbreTrack:
         args = [(sxx.frqs, sxx.power),
                 (sxx.frqs, sxx.power),
                 (sxx.abs,),
-                (sxx.d_frq, sxx.abs, 15000),
+                (sxx.d_frq, sxx.abs, 500),
                 (sxx.frqs, sxx.abs),
                 (segs.data,),
-                (segs.data,)]
+                (segs.data, )]
 
-        kwargs = [{}, {}, {}, {}, {}, {}, self.params.corr_dim.to_dict()]
+        kwargs = [{}, {}, {}, {}, {}, {}, self.params.corr_dim.model_dump()]
 
         out = np.zeros((segs.n_segs, self.n_features))
         for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
+            print(f"{fun=}, {arg=}, {kwarg=}")
             out[:, i] = self._worker(i, fun, arg, kwarg)
 
-        file_meta = SourceMeta(*snd.file_name.split('.'), snd.hash)
-        track_meta = TrackMeta(comsar.__version__, datetime.utcnow(),
-                               file_meta)
+        file_meta = SourceMeta(
+                name=snd._path.stem,
+                extension=snd._path.suffix,
+                hash_=snd.hash)
+
+        track_meta = TrackMeta(
+                version=comsar.__version__,
+                extraction_date=datetime.utcnow(),
+                source=file_meta)
+
         out = pd.DataFrame(data=out, columns=self.feature_names)
         snd.close()
         return TrackResult(track_meta, self.params, out)
@@ -127,9 +148,9 @@ class TimbreTrackCorrGram:
     """Compute timbre track of an audio file.
     """
     def __init__(self,
-                 stft_params: Optional[container.StftParams] = None,
-                 corr_dim_params: Optional[container.CorrDimParams] = None,
-                 corr_gram_params: Optional[container.CorrGramParams] = None) -> None:
+                 stft_params: Optional[asm.StftParams] = None,
+                 corr_dim_params: Optional[asm.CorrDimParams] = None,
+                 corr_gram_params: Optional[asm.CorrGramParams] = None) -> None:
         """
         Args:
         """
@@ -144,9 +165,15 @@ class TimbreTrackCorrGram:
         self.stft = StftSegments(self.params.stft.fps, self.params.stft.window,
                                  self.params.stft.n_fft)
 
-        self.feature_names = ('SpectralCentroid', 'SpectralSpread',
-                              'SpectralFlux', 'Roughness', 'Sharpness',
-                              'SPL', 'CorrelationDimension', 'Correlogram')
+        self.feature_names = (
+                'SpectralCentroid',
+                'SpectralSpread',
+                'SpectralFlux',
+                'Roughness',
+                'Sharpness',
+                'SPL',
+                'CorrelationDimension',
+                'Correlogram')
 
         self.funcs = [features.spectral_centroid,
                       features.spectral_spread,
@@ -185,8 +212,8 @@ class TimbreTrackCorrGram:
                 (segs.data,),
                 (segs.data,)]
 
-        kwargs = [{}, {}, {}, {}, {}, {}, self.params.corr_dim.to_dict(),
-                  self.params.corr_gram.to_dict()]
+        kwargs = [{}, {}, {}, {}, {}, {}, self.params.corr_dim.model_dump(),
+                  self.params.corr_gram.model_dump()]
 
         out = np.zeros((segs.n_segs, self.n_features))
         for i, (fun, arg, kwarg) in enumerate(zip(self.funcs, args, kwargs)):
